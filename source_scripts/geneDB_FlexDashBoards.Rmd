@@ -1,0 +1,159 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns 
+    vertical_layout: fill
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = FALSE, message = FALSE)
+```
+
+```{r echo=F}
+library(tidyverse)
+library(crosstalk)
+library(flexdashboard)
+# INformation
+#https://rstudio.github.io/DT/
+#https://bookdown.org/yihui/rmarkdown/layout.html
+```
+
+Interactives {data-icon="ion-stats-bars"}
+=====================================  
+
+Column {data-width=300}
+-------------------------------------
+
+### Filters
+
+```{r}
+# Load data
+gene_table <- readxl::read_excel(path = "data/Tabela Mandar Daniel.xlsx")
+# Make shared object
+sd <- SharedData$new(gene_table)
+```
+
+```{r}
+# Selectors
+filter_select(
+    id = "gene_name",
+    label = "Gene Name:",
+    sharedData = sd,
+    group = ~Gene)
+filter_select(
+    id = "protein_name",
+    label = "Protein Name:",
+    sharedData = sd,
+    group = ~Name)
+filter_select(
+    id = "Phage",
+    label = "Phage Name:",
+    sharedData = sd,
+    group = ~Phage)
+
+```
+
+Column {data-width=600}
+-------------------------------------
+
+### Datatable
+    
+
+```{r datatable}
+
+sd %>% 
+  DT::datatable(
+    filter = "top",  # allows filtering on each column
+    extensions = c(
+      "Buttons"  # add download buttons, etc
+      #"Scroller"  # for scrolling down the rows rather than pagination
+    ),
+    caption = "Caption to see how it looks",
+    class = 'cell-border stripe',
+    rownames = FALSE,  # remove rownames
+    style = "bootstrap",
+    #class = "compact",
+    #width = "100%",
+    fillContainer = T,
+    options = list(
+      dom = "lrBtip",  # specify content (search box, etc)
+      deferRender = TRUE,
+      scrollY = 700,
+      scroller = F,
+      autoWidth = TRUE,
+      columnDefs = list(
+        list(
+          visible = FALSE,
+          targets = c(2, 3, 5:15),
+          width = "20"
+        )
+      ), 
+      buttons = list(
+        I("colvis"),  # turn columns on and off
+        "csv",  # download as .csv
+        "excel"  # download as .xlsx
+      )
+    ),
+    colnames = c(
+      "Gene" = "Gene",
+      "Protein Name" = "Name",
+      "Expression" = "Expression",
+      "Fold Change" = "Foldchange",
+      "Number" = "Number",
+      "P-value" = "Pvalue",
+      "P-adjusted" = "Padjusted",
+      "Approach" = "Approach",
+      "Technique" = "Technique",
+      "Host Bacteria" = "Bacteria",
+      "Medium" = "Medium",
+      "Hours post infection" = "Hours post infection",
+      "Phage" = "Phage",
+      "Strain" = "Strain",
+      "MOI" = "MOI",
+      "Study Title" = "PAPER",
+      "Year" = "Year",
+      "Reference" = "Reference",
+      "DOI" = "DOI"
+    )
+  )
+```
+
+Information {data-orientation=rows data-icon="fa-info-circle"}
+===================================== 
+
+### How to use
+#### Filters
+
+You can:
+
+* select one or more local authorities from the dropdown menu (remove them with your backspace key)
+* select one or more Ofsted grades using the checkboxes
+* select the phase of education with the checkboxes
+* drag the slider to select a pupil count
+* drag the slider to filter by the percenatge of pupils receiving free school meals
+
+#### Interactive table
+
+You can:
+
+* filter each column by typing in the boxes under each column header
+* sort the columns (ascending and descending) by clicking on the column header
+* change which columns are visible by clicking the Column visibility button
+* click 'CSV' or 'Excel' to download the filtered data to a .csv file or a .xlsx
+* see how many entries remain after filtering in the bottom-left, where it says 'Showing X to Y of Z entries'
+
+### Tools
+
+[R v3.4.4](https://www.r-project.org/) and [RStudio v1.1.442](https://www.rstudio.com/) were used to build this tool.
+
+The packages used were:
+
+* [Flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/) to create a frame for the content
+* [Leaflet](https://rstudio.github.io/leaflet/) for the interactive map
+* [DT](https://rstudio.github.io/DT/) for the interactive table
+* [Crosstalk](https://rstudio.github.io/crosstalk/) for widget interactivity
+* [Ion icons](https://ionicons.com/) and [Font Awesome](https://fontawesome.com/) for icons
+
+The code for this tool is available from 
